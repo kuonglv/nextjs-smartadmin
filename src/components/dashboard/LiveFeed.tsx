@@ -47,11 +47,13 @@ const LiveFeed = () => {
           <ProgressBar
             title="My tasks"
             progress={50}
+            value="130 / 500"
             config={{ bgColor: '#bebebe', color: '#1dc9b7' }}
           />
           <ProgressBar
             title="Transfered"
             progress={80}
+            value="80%"
             config={{ bgColor: '#c6c6c6', color: '#000000' }}
           />
         </div>
