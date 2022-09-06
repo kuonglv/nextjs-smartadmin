@@ -1,4 +1,4 @@
-import { Dialog, Transition } from '@headlessui/react';
+import { Dialog, Disclosure, Transition } from '@headlessui/react';
 import {
   CalendarIcon,
   ChartBarIcon,
@@ -10,6 +10,7 @@ import {
 } from '@heroicons/react/outline';
 import { useRouter } from 'next/router';
 import { Fragment, useEffect, useState } from 'react';
+import { HiChevronRight } from 'react-icons/hi';
 
 const navigation = [
   { name: 'Dashboard', href: '#', icon: HomeIcon, current: true },
@@ -17,7 +18,27 @@ const navigation = [
   { name: 'Projects', href: '#', icon: FolderIcon, current: false },
   { name: 'Calendar', href: '#', icon: CalendarIcon, current: false },
   { name: 'Documents', href: '#', icon: InboxIcon, current: false },
-  { name: 'Reports', href: '#', icon: ChartBarIcon, current: false },
+  {
+    name: 'Pages',
+    href: '#',
+    icon: ChartBarIcon,
+    current: false,
+    children: [
+      { name: 'Login', href: '/login', current: false },
+      { name: 'Members', href: '#', current: false },
+      { name: 'Calendar', href: '#', current: false },
+      {
+        name: 'Settings',
+        href: '#',
+        children: [
+          { name: 'Login', href: '#', current: false },
+          { name: 'Members', href: '#', current: false },
+          { name: 'Calendar', href: '#', current: false },
+          { name: 'Settings', href: '#', current: false },
+        ],
+      },
+    ],
+  },
 ];
 
 function classNames(...classes: any) {
@@ -126,24 +147,128 @@ const Sidebar = (props: ISidebarProps) => {
                   />
                 </div>
                 <nav className="space-y-1 px-0">
-                  {navigation.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      className={classNames(
-                        item.current
-                          ? 'bg-white bg-opacity-5 text-white font-bold text-opacity-100 hover:bg-black hover:bg-opacity-10'
-                          : 'text-gray-200 hover:bg-black hover:bg-opacity-10',
-                        'group flex items-center px-2 py-2 text-sm font-normal'
-                      )}
-                    >
-                      <item.icon
-                        className="mr-4 h-6 w-6 shrink-0 text-gray-300"
-                        aria-hidden="true"
-                      />
-                      {item.name}
-                    </a>
-                  ))}
+                  {navigation.map((item) =>
+                    !item.children ? (
+                      <a
+                        key={item.name}
+                        href={item.href}
+                        className={classNames(
+                          item.current
+                            ? 'bg-white border-l-2 bg-opacity-5 text-white font-bold text-opacity-100 hover:bg-black hover:bg-opacity-10'
+                            : 'text-gray-200 hover:bg-black hover:bg-opacity-10',
+                          'group flex items-center px-2 py-2 text-sm font-normal'
+                        )}
+                      >
+                        <item.icon
+                          className="mr-3 h-5 w-5 shrink-0 text-[#876fab]"
+                          aria-hidden="true"
+                        />
+                        {item.name}
+                      </a>
+                    ) : (
+                      <Disclosure
+                        as="div"
+                        key={item.name}
+                        className="space-y-0"
+                      >
+                        {({ open }) => (
+                          <>
+                            <Disclosure.Button
+                              className={classNames(
+                                item.current
+                                  ? 'bg-white bg-opacity-5 text-white'
+                                  : 'text-gray-200 hover:bg-black hover:bg-opacity-10',
+                                'group w-full flex items-center pl-2 pr-1 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'
+                              )}
+                            >
+                              <item.icon
+                                className="mr-3 h-6 w-6 shrink-0 text-[#876fab] group-hover:text-gray-500"
+                                aria-hidden="true"
+                              />
+                              <span className="flex-1">{item.name}</span>
+                              <HiChevronRight
+                                className={classNames(
+                                  open
+                                    ? 'text-gray-400 rotate-90'
+                                    : 'text-gray-300',
+                                  'ml-3 flex-shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150'
+                                )}
+                              />
+                            </Disclosure.Button>
+                            <Disclosure.Panel className="space-y-0 bg-[rgba(0,0,0,.1)]">
+                              <div className="ml-5 border-l-[1px] border-l-[#876fab]">
+                                {item.children.map((subItem) =>
+                                  !subItem.children ? (
+                                    <a
+                                      key={subItem.name}
+                                      href={subItem.href}
+                                      className={classNames(
+                                        subItem.current
+                                          ? 'bg-white border-l-2 bg-opacity-5 text-white font-bold text-opacity-100 hover:bg-black hover:bg-opacity-10'
+                                          : 'text-gray-200 hover:bg-black hover:bg-opacity-10',
+                                        'group flex items-center -ml-5 pl-9 pr-2 py-2 text-sm font-normal before:border-[1px] before:border-solid before:border-[#333333] before:bg-[#876fab] before:rounded-full before:-ml-5 before:w-[8px] before:h-[8px]'
+                                      )}
+                                    >
+                                      <span className="ml-5">
+                                        {subItem.name}
+                                      </span>
+                                    </a>
+                                  ) : (
+                                    <Disclosure
+                                      as="div"
+                                      key={subItem.name}
+                                      className="-ml-5 space-y-0"
+                                    >
+                                      {({ open: open2 }) => (
+                                        <>
+                                          <div className="ml-0">
+                                            <Disclosure.Button
+                                              className={classNames(
+                                                subItem.current
+                                                  ? 'bg-white bg-opacity-5 text-white'
+                                                  : 'text-gray-200 hover:bg-black hover:bg-opacity-10',
+                                                'group w-full flex items-center pl-9 pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500  before:border-[1px] before:border-solid before:border-[#333333] before:bg-[#876fab] before:rounded-full before:-ml-5 before:w-[8px] before:h-[8px]'
+                                              )}
+                                            >
+                                              <span className="ml-5 flex-1">
+                                                {subItem.name}
+                                              </span>
+                                              <HiChevronRight
+                                                className={classNames(
+                                                  open2
+                                                    ? 'text-gray-400 rotate-90'
+                                                    : 'text-gray-300',
+                                                  'ml-3 h-5 w-5 shrink-0 transition-colors duration-150 ease-in-out group-hover:text-gray-400'
+                                                )}
+                                              />
+                                            </Disclosure.Button>
+                                          </div>
+                                          <Disclosure.Panel className="space-y-0">
+                                            {subItem.children.map(
+                                              (sub2Item) => (
+                                                <Disclosure.Button
+                                                  key={sub2Item.name}
+                                                  as="a"
+                                                  href={sub2Item.href}
+                                                  className="group flex w-full items-center rounded-md py-2 pl-14 pr-2 text-sm font-medium text-gray-200 hover:bg-black hover:bg-opacity-10"
+                                                >
+                                                  {sub2Item.name}
+                                                </Disclosure.Button>
+                                              )
+                                            )}
+                                          </Disclosure.Panel>
+                                        </>
+                                      )}
+                                    </Disclosure>
+                                  )
+                                )}
+                              </div>
+                            </Disclosure.Panel>
+                          </>
+                        )}
+                      </Disclosure>
+                    )
+                  )}
                 </nav>
               </div>
             </div>
@@ -191,25 +316,121 @@ const Sidebar = (props: ISidebarProps) => {
                 className="absolute inset-0 z-0 h-auto"
               />
             </div>
-            <nav className="flex-1 space-y-1 px-0 pb-4">
-              {navigation.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className={classNames(
-                    item.current
-                      ? 'bg-white border-l-2 bg-opacity-5 text-white font-bold text-opacity-100 hover:bg-black hover:bg-opacity-10'
-                      : 'text-gray-200 hover:bg-black hover:bg-opacity-10',
-                    'group flex items-center px-2 py-2 text-sm font-normal'
-                  )}
-                >
-                  <item.icon
-                    className="mr-3 h-5 w-5 shrink-0 text-[#876fab]"
-                    aria-hidden="true"
-                  />
-                  {item.name}
-                </a>
-              ))}
+            <nav className="flex-1 space-y-0 px-0 pb-4">
+              {navigation.map((item) =>
+                !item.children ? (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className={classNames(
+                      item.current
+                        ? 'bg-white border-l-2 bg-opacity-5 text-white font-bold text-opacity-100 hover:bg-black hover:bg-opacity-10'
+                        : 'text-gray-200 hover:bg-black hover:bg-opacity-10',
+                      'group flex items-center px-2 py-2 text-sm font-normal'
+                    )}
+                  >
+                    <item.icon
+                      className="mr-3 h-5 w-5 shrink-0 text-[#876fab]"
+                      aria-hidden="true"
+                    />
+                    {item.name}
+                  </a>
+                ) : (
+                  <Disclosure as="div" key={item.name} className="space-y-0">
+                    {({ open }) => (
+                      <>
+                        <Disclosure.Button
+                          className={classNames(
+                            item.current
+                              ? 'bg-white bg-opacity-5 text-white'
+                              : 'text-gray-200 hover:bg-black hover:bg-opacity-10',
+                            'group w-full flex items-center pl-2 pr-1 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'
+                          )}
+                        >
+                          <item.icon
+                            className="mr-3 h-6 w-6 shrink-0 text-[#876fab] group-hover:text-gray-500"
+                            aria-hidden="true"
+                          />
+                          <span className="flex-1">{item.name}</span>
+                          <HiChevronRight
+                            className={classNames(
+                              open
+                                ? 'text-gray-400 rotate-90'
+                                : 'text-gray-300',
+                              'ml-3 flex-shrink-0 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150'
+                            )}
+                          />
+                        </Disclosure.Button>
+                        <Disclosure.Panel className="space-y-0 bg-[rgba(0,0,0,.1)]">
+                          <div className="ml-5 border-l-[1px] border-l-[#876fab]">
+                            {item.children.map((subItem) =>
+                              !subItem.children ? (
+                                <a
+                                  key={subItem.name}
+                                  href={subItem.href}
+                                  className={classNames(
+                                    subItem.current
+                                      ? 'bg-white border-l-2 bg-opacity-5 text-white font-bold text-opacity-100 hover:bg-black hover:bg-opacity-10'
+                                      : 'text-gray-200 hover:bg-black hover:bg-opacity-10',
+                                    'group flex items-center -ml-5 pl-9 pr-2 py-2 text-sm font-normal before:border-[1px] before:border-solid before:border-[#333333] before:bg-[#876fab] before:rounded-full before:-ml-5 before:w-[8px] before:h-[8px]'
+                                  )}
+                                >
+                                  <span className="ml-5">{subItem.name}</span>
+                                </a>
+                              ) : (
+                                <Disclosure
+                                  as="div"
+                                  key={subItem.name}
+                                  className="-ml-5 space-y-0"
+                                >
+                                  {({ open: open2 }) => (
+                                    <>
+                                      <div className="ml-0">
+                                        <Disclosure.Button
+                                          className={classNames(
+                                            subItem.current
+                                              ? 'bg-white bg-opacity-5 text-white'
+                                              : 'text-gray-200 hover:bg-black hover:bg-opacity-10',
+                                            'group w-full flex items-center pl-9 pr-2 py-2 text-left text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500  before:border-[1px] before:border-solid before:border-[#333333] before:bg-[#876fab] before:rounded-full before:-ml-5 before:w-[8px] before:h-[8px]'
+                                          )}
+                                        >
+                                          <span className="ml-5 flex-1">
+                                            {subItem.name}
+                                          </span>
+                                          <HiChevronRight
+                                            className={classNames(
+                                              open2
+                                                ? 'text-gray-400 rotate-90'
+                                                : 'text-gray-300',
+                                              'ml-3 h-5 w-5 shrink-0 transition-colors duration-150 ease-in-out group-hover:text-gray-400'
+                                            )}
+                                          />
+                                        </Disclosure.Button>
+                                      </div>
+                                      <Disclosure.Panel className="space-y-0">
+                                        {subItem.children.map((sub2Item) => (
+                                          <Disclosure.Button
+                                            key={sub2Item.name}
+                                            as="a"
+                                            href={sub2Item.href}
+                                            className="group flex w-full items-center rounded-md py-2 pl-14 pr-2 text-sm font-medium text-gray-200 hover:bg-black hover:bg-opacity-10"
+                                          >
+                                            {sub2Item.name}
+                                          </Disclosure.Button>
+                                        ))}
+                                      </Disclosure.Panel>
+                                    </>
+                                  )}
+                                </Disclosure>
+                              )
+                            )}
+                          </div>
+                        </Disclosure.Panel>
+                      </>
+                    )}
+                  </Disclosure>
+                )
+              )}
             </nav>
           </div>
         </div>
